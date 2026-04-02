@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Приборка Peugeot 206</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #0a0f14;
+      font-family: Arial, sans-serif;
+    }
+    .gauge-container {
+      flex: 1 1 auto;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      position: relative;
+      min-height: 0;
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .bottom-panel {
+      flex: 0 0 auto;
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 10px 12px 14px;
+      background: linear-gradient(to top, #0f1620, rgba(15,22,32,0.98));
+    }
+    .rashod-control { text-align: center; margin-bottom: 8px; }
+    .rashod-control label { font-size: 12.5px; color: #aaa; }
+    input[type="range"] { width: 100%; accent-color: #f06d00; }
+    .rashod-value { font-size: 16px; color: #f06d00; }
+    .info-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .info-box {
+      flex: 1;
+      min-width: 130px;
+      text-align: center;
+      padding: 9px 6px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(240,109,0,0.25);
+    }
+    .label { font-size: 10.5px; color: #aaa; margin-bottom: 3px; }
+    .value-big { font-size: clamp(20px, 3.8vw, 32px); font-weight: 800; color: #f06d00; }
+    .unit { font-size: 10.5px; color: #777; }
+    #pricePerLiter, #plannedDistance {
+      width: 100%;
+      background: transparent;
+      border: none;
+      font-size: clamp(20px, 3.8vw, 32px);
+      font-weight: 800;
+      color: #f06d00;
+      text-align: center;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+<div class="gauge-container">
+  <svg id="svg" viewBox="0 0 1222.69 1250" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <style>
+        .cls-12 { fill: #ccc; }
+        .cls-14 { fill: none; stroke: #f06d00; stroke-miterlimit: 10; stroke-width: 11px; }
+        .cls-7 { fill: url(#grad403); }
+        .cls-8 { fill: url(#grad61); }
+        .cls-9, .cls-15 { font-family: Swiss721BT-Black, 'Swis721 Blk BT'; font-weight: 800; }
+        .cls-15 { letter-spacing: -.02em; }
+        
+        .fuel-icon { fill: #ccc; }
+
+        .gauge-mark {
+          font-family: "Arial Black", Impact, sans-serif;
+          font-weight: 900;
+          fill: #ccc;
+          text-anchor: middle;
+          dominant-baseline: middle;
+          pointer-events: none;
+          user-select: none;
+        }
+      </style>
+      <linearGradient id="grad61" x1="1015.79" y1="580.58" x2="934.38" y2="817.02" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#323639"/>
+        <stop offset="1" stop-color="#000"/>
+      </linearGradient>
+      <linearGradient id="grad403" x1="717.81" y1="914.32" x2="734.53" y2="932.9" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#fff"/>
+        <stop offset="1" stop-color="#000"/>
+      </linearGradient>
+    </defs>
+    <rect width="1222.69" height="1250" fill="#0a0f14"/>
+    <g id="Деления">
+      <!-- Мітки -->
+      <text class="gauge-mark" x="45.5%" y="26.2%" font-size="42">1</text>
+      <text class="gauge-mark" x="34.5%" y="56.4%" font-size="42">1/2</text>
+      <text class="gauge-mark" x="45.5%" y="86.2%" font-size="42">R</text>
+
+      <!-- ІКОНКА БЕНЗОБАКУ -->
+      <g id="fuelIconGroup" transform="translate(685 295) scale(0.80)">
+        <svg width="110.92" height="122.88" viewBox="0 0 110.92 122.88" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <mask id="cutout">
+              <rect width="110.92" height="122.88" fill="white"/>
+              <rect x="15.87" y="12.54" width="43.5" height="30.5" rx="2" fill="black"/>
+            </mask>
+          </defs>
+          <g mask="url(#cutout)">
+            <path class="fuel-icon" d="M99.08,20.2c0.27,0.13,0.51,0.3,0.74,0.52c0.06,0.06,0.11,0.12,0.16,0.18c2.89,2.29,5.78,4.88,7.88,8 c2.32,3.45,3.61,7.44,2.83,12.17c-0.33,1.98-1.08,3.71-2.22,5.24c-0.82,1.09-1.82,2.05-3,2.89c-0.06,1.53-0.08,3.03-0.08,4.52 c0.01,1.91,0.07,3.88,0.18,5.9c0.25,4.74,0.96,9.52,1.67,14.26c0.76,5.1,1.52,10.16,1.72,15.43c0.27,6.75-0.53,12.3-2.76,16.22 c-2.48,4.38-6.51,6.72-12.45,6.51l0,0c-7.09-0.13-11.45-4.11-13.42-11.46c-1.72-6.43-1.46-15.61,0.49-27.16 c-0.06-9.15-1.25-16.08-3.61-20.75c-1.54-3.05-3.63-5.07-6.27-6.03v59.92c0.86,0.41,1.64,0.97,2.3,1.64 c1.52,1.52,2.47,3.63,2.47,5.95v5.98c0,1.51-1.23,2.74-2.74,2.74H2.74c-1.51,0-2.74-1.23-2.74-2.74v-5.98 c0-2.32,0.95-4.42,2.47-5.95c0.47-0.47,1-0.89,1.57-1.24V14.52c0-4,1.63-7.63,4.26-10.26C10.93,1.63,14.56,0,18.56,0h37.78 c4.01,0,7.66,1.64,10.3,4.28c2.64,2.64,4.28,6.29,4.28,10.31v26.36c4.86,1.06,8.57,4.17,11.15,9.27 c2.77,5.47,4.15,13.31,4.19,23.46c0,0.16-0.01,0.32-0.04,0.47h0.01c-1.85,10.87-2.15,19.35-0.63,25.02 c1.27,4.77,3.95,7.35,8.24,7.41h0.05l0,0c3.66,0.12,6.09-1.22,7.52-3.75c1.69-2.98,2.28-7.55,2.05-13.31 c-0.19-4.88-0.94-9.85-1.68-14.85c-0.72-4.82-1.44-9.68-1.71-14.78c-0.11-2.01-0.17-4.06-0.18-6.18c-0.01-1.68,0.02-3.34,0.09-4.97 c-5.11-4.48-8.22-8.96-9.18-13.42c-0.91-4.23,0.05-8.29,3-12.17c-2.25-1.54-4.54-2.8-6.86-3.81c-3.17-1.38-3.19-1.5-6.51-2.04 c-1.49-0.24-2.5-1.65-2.26-3.14c0.24-1.49,1.65-2.5,3.14-2.26c3.76,0.61,4.21,0.85,7.82,2.42C92.56,15.82,95.87,17.75,99.08,20.2z M68.43,111.48c-0.08,0.01-0.15,0.01-0.23,0.01H7.26 c-0.34,0.15-0.65,0.36-0.91,0.62c-0.53,0.53-0.86,1.26-0.86,2.07v3.24h64.74v-3.24c0-0.8-0.33-1.53-0.86-2.07 C69.1,111.84,68.78,111.63,68.43,111.48z"/>
+          </g>
+        </svg>
+      </g>
+
+      <!-- Лампочка -->
+      <g id="lowFuelLightGroup">
+        <circle id="lowFuelLight"
+                cx="55.5%"
+                cy="91.2%"
+                r="30"
+                fill="#f06d00"
+                opacity="0"
+                filter="drop-shadow(0 0 15px #f06d00)"/>
+      </g>
+
+      <!-- Деления шкали -->
+      <rect class="cls-12" x="428.59" y="245.55" width="95" height="60" rx="10" ry="10" transform="translate(279.51 -238.21) rotate(39)"/>
+      <rect class="cls-12" x="367.34" y="348.46" width="95" height="25" rx="10" ry="10" transform="translate(236.06 -159.06) rotate(30)"/>
+      <rect class="cls-12" x="312.55" y="449.48" width="95" height="35" rx="10" ry="10" transform="translate(181.43 -94.98) rotate(20)"/>
+      <rect class="cls-12" x="279.06" y="568.28" width="95" height="25" rx="10" ry="10" transform="translate(84.01 -39.8) rotate(8)"/>
+      <rect class="cls-12" x="264.75" y="681.3" width="95" height="35" rx="10" ry="10"/>
+      <rect class="cls-12" x="279.06" y="801.3" width="95" height="25" rx="10" ry="10" transform="translate(-96.74 45.86) rotate(-7)"/>
+      <rect class="cls-12" x="312.25" y="911.3" width="95" height="35" rx="10" ry="10" transform="translate(-282.79 167.72) rotate(-19)"/>
+      <rect class="cls-12" x="367.34" y="1023.6" width="95" height="25" rx="10" ry="10" transform="translate(-450.3 331.03) rotate(-29)"/>
+      <rect class="cls-14" x="428.59" y="1097.03" width="95" height="55" rx="10" ry="10" transform="translate(-601.59 550.22) rotate(-39)"/>
+    </g>
+    <g id="arrowGroup">
+      <circle class="cls-8" cx="975.09" cy="698.8" r="125"/>
+      <polygon id="arrow" class="cls-7" points="966.76 690.16 474.6 1144.86 482.19 1153.29 983.49 708.74 966.76 690.16"/>
+      <polygon id="hitArea" points="966.76 690.16 474.6 1144.86 482.19 1153.29 983.49 708.74 966.76 690.16"
+               fill="transparent" stroke="#00ffcc" stroke-width="85" stroke-opacity="0.0" pointer-events="all"/>
+    </g>
+  </svg>
+</div>
+<div class="bottom-panel">
+  <div class="rashod-control">
+    <label>Фактичний розхід палива</label>
+    <input type="range" id="rashodSlider" min="5" max="25" step="0.1" value="12.5">
+    <div class="rashod-value" id="rashodValue">12.5 л/100 км</div>
+  </div>
+  <div class="info-row">
+    <div class="info-box"><div class="label">Залишок</div><div class="value-big" id="ostatok">0</div><div class="unit">літрів</div></div>
+    <div class="info-box"><div class="label">Виставчить на</div><div class="value-big distance" id="distance">0</div><div class="unit">км</div></div>
+    <div class="info-box"><div class="label">Ціна за 1 л</div><input type="number" id="pricePerLiter" value="52" step="0.1"><div class="unit">грн/л</div></div>
+    <div class="info-box"><div class="label">Вартість 1 км</div><div class="value-big" id="costPerKm">0.00</div><div class="unit">грн/км</div></div>
+    <div class="info-box"><div class="label">Планова відстань</div><input type="number" id="plannedDistance" value="100" step="1"><div class="unit">км</div></div>
+    <div class="info-box"><div class="label">Вартість поїздки</div><div class="value-big" id="tripCost">0.00</div><div class="unit">грн</div></div>
+  </div>
+</div>
+
+<script>
+  // ==================== НАСТРОЙКИ ====================
+  const minValue = 0, maxValue = 50, startAngle = 0, endAngle = 84;
+  let angleOffset = 137.5, smoothness = 0.18;
+  let rashod = 12.5, pricePerLiter = 52, plannedDistance = 100;
+  const lowFuelThreshold = 5;
+  // =================================================
+  const svg = document.getElementById('svg');
+  const arrowGroup = document.getElementById('arrowGroup');
+  const warningLight = document.getElementById('lowFuelLight');
+  const ostatokEl = document.getElementById('ostatok');
+  const distanceEl = document.getElementById('distance');
+  const costPerKmEl = document.getElementById('costPerKm');
+  const tripCostEl = document.getElementById('tripCost');
+  const rashodSlider = document.getElementById('rashodSlider');
+  const rashodValueEl = document.getElementById('rashodValue');
+  const priceInput = document.getElementById('pricePerLiter');
+  const plannedInput = document.getElementById('plannedDistance');
+  const cx = 975.09, cy = 698.8;
+  let isDragging = false;
+  let currentAngle = startAngle;
+  let targetAngle = startAngle;
+  function update(angle) {
+    targetAngle = Math.max(startAngle, Math.min(endAngle, angle));
+  }
+  function calculateAndUpdate() {
+    const progress = (currentAngle - startAngle) / (endAngle - startAngle);
+    const liters = Math.round(minValue + progress * (maxValue - minValue));
+   
+    ostatokEl.textContent = liters;
+    const distance = liters > 0 ? Math.round((liters / rashod) * 100) : 0;
+    distanceEl.textContent = distance;
+    const costPerKm = rashod > 0 ? (rashod / 100 * pricePerLiter).toFixed(2) : "0.00";
+    costPerKmEl.textContent = costPerKm;
+    const tripCost = (plannedDistance * parseFloat(costPerKm)).toFixed(2);
+    tripCostEl.textContent = tripCost;
+    warningLight.setAttribute('opacity', liters <= lowFuelThreshold ? '1' : '0');
+  }
+  function animate() {
+    currentAngle = currentAngle * (1 - smoothness) + targetAngle * smoothness;
+    arrowGroup.setAttribute('transform', `rotate(${currentAngle} ${cx} ${cy})`);
+    calculateAndUpdate();
+    requestAnimationFrame(animate);
+  }
+  function getAngleFromEvent(e) {
+    const rect = svg.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const svgX = ((clientX - rect.left) / rect.width) * 1222.69;
+    const svgY = ((clientY - rect.top) / rect.height) * 1250;
+    const dx = svgX - cx, dy = svgY - cy;
+    let angleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
+    let finalAngle = angleDeg - angleOffset;
+    if (finalAngle < -180) finalAngle += 360;
+    if (finalAngle > 180) finalAngle -= 360;
+    return finalAngle;
+  }
+  function startDrag(e) {
+    if (e.target.id === 'arrow' || e.target.id === 'hitArea' || e.target.closest('#arrowGroup')) isDragging = true;
+  }
+  function drag(e) {
+    if (!isDragging) return;
+    update(getAngleFromEvent(e));
+  }
+  rashodSlider.addEventListener('input', () => {
+    rashod = parseFloat(rashodSlider.value);
+    rashodValueEl.textContent = rashod.toFixed(1) + " л/100 км";
+    calculateAndUpdate();
+  });
+  priceInput.addEventListener('input', () => { pricePerLiter = parseFloat(priceInput.value) || 0; calculateAndUpdate(); });
+  plannedInput.addEventListener('input', () => { plannedDistance = parseFloat(plannedInput.value) || 0; calculateAndUpdate(); });
+  svg.addEventListener('mousedown', startDrag);
+  window.addEventListener('mousemove', drag);
+  window.addEventListener('mouseup', () => isDragging = false);
+  window.addEventListener('mouseleave', () => isDragging = false);
+  svg.addEventListener('touchstart', e => { e.preventDefault(); startDrag(e); });
+  svg.addEventListener('touchmove', e => { e.preventDefault(); drag(e); });
+  svg.addEventListener('touchend', () => isDragging = false);
+  rashodSlider.value = rashod;
+  rashodValueEl.textContent = rashod.toFixed(1) + " л/100 км";
+  priceInput.value = pricePerLiter;
+  plannedInput.value = plannedDistance;
+  update(startAngle);
+  animate();
+</script>
+</body>
+</html>
