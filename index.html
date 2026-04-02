@@ -29,6 +29,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      touch-action: none;
     }
     .bottom-panel {
       flex: 0 0 auto;
@@ -115,8 +116,6 @@
         .cls-14 { fill: none; stroke: #f06d00; stroke-miterlimit: 10; stroke-width: 11px; }
         .cls-7 { fill: url(#grad403); }
         .cls-8 { fill: url(#grad61); }
-        .cls-9, .cls-15 { font-family: Swiss721BT-Black, 'Swis721 Blk BT'; font-weight: 800; }
-        .cls-15 { letter-spacing: -.02em; }
         .fuel-icon { fill: #ccc; }
         .gauge-mark {
           font-family: "Arial Black", Impact, sans-serif;
@@ -138,13 +137,14 @@
       </linearGradient>
     </defs>
     <rect width="1222.69" height="1250" fill="#0a0f14"/>
+    
+    <!-- Деления і мітки -->
     <g id="Деления">
-      <!-- Мітки -->
       <text class="gauge-mark" x="45.5%" y="26.2%" font-size="42">1</text>
       <text class="gauge-mark" x="34.5%" y="56.4%" font-size="42">1/2</text>
       <text class="gauge-mark" x="45.5%" y="86.2%" font-size="42">R</text>
       
-      <!-- ІКОНКА БЕНЗОБАКУ -->
+      <!-- Іконка бензобаку -->
       <g id="fuelIconGroup" transform="translate(685 295) scale(0.80)">
         <svg width="110.92" height="122.88" viewBox="0 0 110.92 122.88" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -159,18 +159,12 @@
         </svg>
       </g>
 
-      <!-- Лампочка низького рівня палива -->
+      <!-- Лампочка низького рівня -->
       <g id="lowFuelLightGroup">
-        <circle id="lowFuelLight"
-                cx="55.5%"
-                cy="91.2%"
-                r="30"
-                fill="#f06d00"
-                opacity="0"
-                filter="drop-shadow(0 0 15px #f06d00)"/>
+        <circle id="lowFuelLight" cx="55.5%" cy="91.2%" r="30" fill="#f06d00" opacity="0" filter="drop-shadow(0 0 15px #f06d00)"/>
       </g>
 
-      <!-- Деления шкали (залишив без змін) -->
+      <!-- Деления шкали -->
       <rect class="cls-12" x="428.59" y="245.55" width="95" height="60" rx="10" ry="10" transform="translate(279.51 -238.21) rotate(39)"/>
       <rect class="cls-12" x="367.34" y="348.46" width="95" height="25" rx="10" ry="10" transform="translate(236.06 -159.06) rotate(30)"/>
       <rect class="cls-12" x="312.55" y="449.48" width="95" height="35" rx="10" ry="10" transform="translate(181.43 -94.98) rotate(20)"/>
@@ -200,7 +194,7 @@
 
   <div class="info-row">
     <div class="info-box"><div class="label">Залишок</div><div class="value-big" id="ostatok">0</div><div class="unit">літрів</div></div>
-    <div class="info-box"><div class="label">Виставчить на</div><div class="value-big distance" id="distance">0</div><div class="unit">км</div></div>
+    <div class="info-box"><div class="label">Виставчить на</div><div class="value-big" id="distance">0</div><div class="unit">км</div></div>
     
     <div class="info-box">
       <div class="label">Ціна за 1 л</div>
@@ -224,19 +218,25 @@
   // Telegram Mini App
   const tg = window.Telegram.WebApp;
   tg.expand();
-  tg.setHeaderColor("#0a0f14");
-  tg.setBackgroundColor("#0a0f14");
-  tg.disableVerticalSwipes();
   tg.ready();
-  tg.BackButton.show();
 
-  tg.BackButton.onClick(() => {
-    if (document.activeElement && document.activeElement.tagName === "INPUT") {
-      document.activeElement.blur();
-    } else {
-      tg.close();
-    }
-  });
+  // Безпечна ініціалізація кольорів та кнопок
+  if (tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) {
+    tg.setHeaderColor("#0a0f14");
+    tg.setBackgroundColor("#0a0f14");
+    if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+  }
+
+  if (tg.BackButton) {
+    tg.BackButton.show();
+    tg.BackButton.onClick(() => {
+      if (document.activeElement?.tagName === "INPUT") {
+        document.activeElement.blur();
+      } else {
+        tg.close();
+      }
+    });
+  }
 
   // ==================== НАСТРОЙКИ ====================
   const minValue = 0, maxValue = 50, startAngle = 0, endAngle = 84;
@@ -273,7 +273,6 @@
     const liters = Math.round(minValue + progress * (maxValue - minValue));
 
     ostatokEl.textContent = liters;
-
     const distance = liters > 0 ? Math.round((liters / rashod) * 100) : 0;
     distanceEl.textContent = distance;
 
@@ -283,7 +282,6 @@
     const tripCost = (plannedDistance * parseFloat(costPerKm)).toFixed(2);
     tripCostEl.textContent = tripCost;
 
-    // Попередження про низький рівень палива
     warningLight.setAttribute('opacity', liters <= lowFuelThreshold ? '1' : '0');
   }
 
@@ -302,8 +300,7 @@
     const svgX = ((clientX - rect.left) / rect.width) * 1222.69;
     const svgY = ((clientY - rect.top) / rect.height) * 1250;
 
-    const dx = svgX - cx;
-    const dy = svgY - cy;
+    const dx = svgX - cx, dy = svgY - cy;
     let angleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
     let finalAngle = angleDeg - angleOffset;
 
@@ -313,13 +310,16 @@
     return finalAngle;
   }
 
+  function closeKeyboard() {
+    if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) {
+      document.activeElement.blur();
+    }
+  }
+
   function startDrag(e) {
     if (e.target.id === 'arrow' || e.target.id === 'hitArea' || e.target.closest('#arrowGroup')) {
       isDragging = true;
-      // При початку перетягування прибираємо фокус з інпутів
-      if (document.activeElement && document.activeElement.tagName === "INPUT") {
-        document.activeElement.blur();
-      }
+      closeKeyboard(); // Закриваємо клавіатуру при початку перетягування
     }
   }
 
@@ -328,26 +328,28 @@
     update(getAngleFromEvent(e));
   }
 
-  // ==================== ОБРОБНИКИ ПОДІЙ ====================
+  // ==================== ГЛОБАЛЬНЕ ЗАКРИТТЯ КЛАВІАТУРИ ====================
+  // Головний фікс: закриття клавіатури при тачі/кліку в будь-якому місці
+  document.addEventListener('touchstart', (e) => {
+    // Якщо тач НЕ по інпуту — закриваємо клавіатуру
+    if (!e.target.closest('input')) {
+      closeKeyboard();
+    }
+  }, { passive: true });
 
-  // Приховування клавіатури при кліку в будь-якому місці екрану (крім інпутів)
   document.addEventListener('click', (e) => {
     if (!e.target.closest('input')) {
-      const activeElement = document.activeElement;
-      if (activeElement && (activeElement.tagName === "INPUT" || activeElement.tagName === "TEXTAREA")) {
-        activeElement.blur();
-      }
+      closeKeyboard();
     }
   });
 
-  // Обробка слайдера розходу
+  // ==================== ОБРОБНИКИ ====================
   rashodSlider.addEventListener('input', () => {
     rashod = parseFloat(rashodSlider.value);
     rashodValueEl.textContent = rashod.toFixed(1) + " л/100 км";
     calculateAndUpdate();
   });
 
-  // Обробка полів введення
   priceInput.addEventListener('input', () => {
     pricePerLiter = parseFloat(priceInput.value) || 0;
     calculateAndUpdate();
@@ -364,15 +366,19 @@
   window.addEventListener('mouseup', () => { isDragging = false; });
   window.addEventListener('mouseleave', () => { isDragging = false; });
 
-  svg.addEventListener('touchstart', e => { 
-    e.preventDefault(); 
-    startDrag(e); 
+  svg.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    startDrag(e);
+  }, { passive: false });
+
+  svg.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    drag(e);
+  }, { passive: false });
+
+  svg.addEventListener('touchend', () => {
+    isDragging = false;
   });
-  svg.addEventListener('touchmove', e => { 
-    e.preventDefault(); 
-    drag(e); 
-  });
-  svg.addEventListener('touchend', () => { isDragging = false; });
 
   // ==================== ІНІЦІАЛІЗАЦІЯ ====================
   rashodSlider.value = rashod;
