@@ -54,6 +54,8 @@
     .label { font-size: 10.5px; color: #aaa; margin-bottom: 3px; }
     .value-big { font-size: clamp(20px, 3.8vw, 32px); font-weight: 800; color: #f06d00; }
     .unit { font-size: 10.5px; color: #777; }
+
+    /* Поля введення без стрілок */
     #pricePerLiter, #plannedDistance {
       width: 100%;
       background: transparent;
@@ -63,6 +65,16 @@
       color: #f06d00;
       text-align: center;
       outline: none;
+      -moz-appearance: textfield;     /* Прибирає стрілки в Firefox */
+    }
+
+    /* Прибираємо стрілки в Chrome, Edge, Safari */
+    #pricePerLiter::-webkit-outer-spin-button,
+    #pricePerLiter::-webkit-inner-spin-button,
+    #plannedDistance::-webkit-outer-spin-button,
+    #plannedDistance::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
   </style>
 </head>
@@ -158,9 +170,17 @@
   <div class="info-row">
     <div class="info-box"><div class="label">Залишок</div><div class="value-big" id="ostatok">0</div><div class="unit">літрів</div></div>
     <div class="info-box"><div class="label">Виставчить на</div><div class="value-big distance" id="distance">0</div><div class="unit">км</div></div>
-    <div class="info-box"><div class="label">Ціна за 1 л</div><input type="number" id="pricePerLiter" value="52" step="0.1"><div class="unit">грн/л</div></div>
+    <div class="info-box">
+      <div class="label">Ціна за 1 л</div>
+      <input type="number" id="pricePerLiter" value="52" step="0.1">
+      <div class="unit">грн/л</div>
+    </div>
     <div class="info-box"><div class="label">Вартість 1 км</div><div class="value-big" id="costPerKm">0.00</div><div class="unit">грн/км</div></div>
-    <div class="info-box"><div class="label">Планова відстань</div><input type="number" id="plannedDistance" value="100" step="1"><div class="unit">км</div></div>
+    <div class="info-box">
+      <div class="label">Планова відстань</div>
+      <input type="number" id="plannedDistance" value="100" step="1">
+      <div class="unit">км</div>
+    </div>
     <div class="info-box"><div class="label">Вартість поїздки</div><div class="value-big" id="tripCost">0.00</div><div class="unit">грн</div></div>
   </div>
 </div>
@@ -171,16 +191,15 @@
   tg.expand();
   tg.setHeaderColor("#0a0f14");
   tg.setBackgroundColor("#0a0f14");
-  tg.disableVerticalSwipes();   // Запобігає випадковому закриттю свайпом
+  tg.disableVerticalSwipes();
   tg.ready();
 
-  // Кнопка "Назад" — спочатку ховає клавіатуру, потім закриває додаток
   tg.BackButton.show();
   tg.BackButton.onClick(() => {
     if (document.activeElement && document.activeElement.tagName === "INPUT") {
-      document.activeElement.blur(); // Ховаємо клавіатуру
+      document.activeElement.blur();
     } else {
-      tg.close(); // Закриваємо додаток
+      tg.close();
     }
   });
 
@@ -258,7 +277,6 @@
     update(getAngleFromEvent(e));
   }
 
-  // Події слайдера та інпутів
   rashodSlider.addEventListener('input', () => {
     rashod = parseFloat(rashodSlider.value);
     rashodValueEl.textContent = rashod.toFixed(1) + " л/100 км";
@@ -275,7 +293,6 @@
     calculateAndUpdate();
   });
 
-  // Drag події
   svg.addEventListener('mousedown', startDrag);
   window.addEventListener('mousemove', drag);
   window.addEventListener('mouseup', () => isDragging = false);
@@ -285,7 +302,7 @@
   svg.addEventListener('touchmove', e => { e.preventDefault(); drag(e); });
   svg.addEventListener('touchend', () => isDragging = false);
 
-  // Автоматичне приховування клавіатури при кліку поза інпутами
+  // Автоматичне приховування клавіатури
   document.addEventListener('click', (e) => {
     if (!e.target.closest('input')) {
       if (document.activeElement && document.activeElement.tagName === "INPUT") {
